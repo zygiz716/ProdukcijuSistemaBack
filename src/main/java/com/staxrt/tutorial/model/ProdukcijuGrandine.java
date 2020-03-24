@@ -11,12 +11,12 @@ import java.util.List;
 @Setter
 @EntityListeners({AuditingEntityListener.class})
 @Entity
-@Table(name = "produkcija")
+@Table(name = "produkcijuGrandine")
 public class ProdukcijuGrandine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @Column(name = "pavadinimas")
     private String pavadinimas;

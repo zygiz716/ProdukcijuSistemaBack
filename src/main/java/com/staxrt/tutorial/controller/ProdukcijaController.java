@@ -6,7 +6,6 @@ import com.staxrt.tutorial.service.ProdukcijaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,7 +27,7 @@ public class ProdukcijaController {
     }
 
     @DeleteMapping("/trinti/{id}")
-    public long trintiProdukcija(@PathVariable("id") long id) {
+    public long trintiProdukcija(@PathVariable("id") Long id) {
         produkcijaService.trinti(id);
         return 1;
     }

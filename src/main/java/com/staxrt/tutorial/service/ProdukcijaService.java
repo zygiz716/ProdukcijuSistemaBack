@@ -9,7 +9,7 @@ public interface ProdukcijaService {
 
     void save(ProdukcijaView produkcija);
 
-    void trinti(long id);
+    void trinti(Long id);
 
     void atnaujinti(ProdukcijaView produkcija);
 

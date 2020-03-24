@@ -10,9 +10,11 @@ import java.util.List;
 public interface ProdukcijuGrandineService {
     void save(ProdukcijuGrandineView produkcija);
 
-    void trinti(long id);
+    void trinti(Long id);
 
     void atnaujinti(ProdukcijuGrandineView grandine);
 
     List<ProdukcijuGrandine> getGrandines();
+
+    ProdukcijuGrandine getGrandine(Long id);
 }

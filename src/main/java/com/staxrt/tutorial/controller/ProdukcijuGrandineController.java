@@ -25,6 +25,11 @@ public class ProdukcijuGrandineController {
         return produkcijuGrandineService.getGrandines();
     }
 
+    @GetMapping("/{id}")
+    public ProdukcijuGrandine gautiProdukcija(@PathVariable("id") Long id) {
+        return produkcijuGrandineService.getGrandine(id);
+    }
+
     @PostMapping("/kurti-nauja")
     public long kurtiProdukcija(@RequestBody ProdukcijuGrandineView grandine) {
         produkcijuGrandineService.save(grandine);
@@ -32,7 +37,7 @@ public class ProdukcijuGrandineController {
     }
 
     @DeleteMapping("/trinti/{id}")
-    public long trintiProdukcija(@PathVariable("id") long id) {
+    public long trintiProdukcija(@PathVariable("id") Long id) {
         produkcijuGrandineService.trinti(id);
         return 1;
     }

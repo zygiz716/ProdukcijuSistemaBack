@@ -27,7 +27,7 @@ public class ProdukcijaServiceImpl implements ProdukcijaService {
     }
 
     @Override
-    public void trinti(long id) {
+    public void trinti(Long id) {
         produkcijaRepository.deleteById(id);
     }
 
@@ -42,8 +42,8 @@ public class ProdukcijaServiceImpl implements ProdukcijaService {
             produkcija.setId(view.getId());
         }
         produkcija.setPavadinimas(view.getPavadinimas());
-        produkcija.setIvestis(view.getPavadinimas());
-        produkcija.setIsvestis(view.getPavadinimas());
+        produkcija.setIvestis(view.getIvestis());
+        produkcija.setIsvestis(view.getIsvestis());
         return produkcija;
     }
 }

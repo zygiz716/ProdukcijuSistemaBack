@@ -25,8 +25,13 @@ public class ProdukcijuGrandineServiceImpl implements ProdukcijuGrandineService 
     }
 
     @Override
-    public void trinti(long id) {
+    public void trinti(Long id) {
         produkcijuGrandineRepository.deleteById(id);
+    }
+
+    @Override
+    public ProdukcijuGrandine getGrandine(Long id) {
+        return produkcijuGrandineRepository.findById(id).orElseThrow();
     }
 
     @Override
