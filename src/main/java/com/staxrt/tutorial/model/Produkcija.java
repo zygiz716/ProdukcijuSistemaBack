@@ -22,11 +22,18 @@ public class Produkcija {
     @Column(name = "pavadinimas")
     private String pavadinimas;
 
-    @Column(name = "ivestis")
-    private String ivestis;
+    @Column(name="ivestys")
+    @ElementCollection(targetClass=String.class)
+    private List<String> ivestys;
 
     @Column(name = "isvestis")
     private String isvestis;
+
+    @Transient
+    private boolean flag1 = false;
+
+    @Transient
+    private boolean flag2 = false;
 
     @JsonIgnore
     @ManyToMany
@@ -35,4 +42,15 @@ public class Produkcija {
             joinColumns = @JoinColumn(name = "produkcijos_id"),
             inverseJoinColumns = @JoinColumn(name = "grandines_id"))
     private List<ProdukcijuGrandine> produkcijuGrandines;
+
+    public String printIvestys(){
+        String text = "";
+        if(ivestys.size()>0) {
+            for (int i = 0; i < ivestys.size() - 1; i++) {
+                text += ivestys.get(i) + ",";
+            }
+            text += ivestys.get(ivestys.size() - 1);
+        }
+        return text;
+    }
 }
