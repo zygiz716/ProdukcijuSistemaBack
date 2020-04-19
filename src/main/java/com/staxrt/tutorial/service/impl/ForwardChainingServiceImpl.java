@@ -1,5 +1,6 @@
 package com.staxrt.tutorial.service.impl;
 
+import com.staxrt.tutorial.model.IsvedimoDuomenys;
 import com.staxrt.tutorial.model.Production;
 import com.staxrt.tutorial.model.Produkcija;
 import com.staxrt.tutorial.repository.ProductionRepository;
@@ -33,20 +34,26 @@ public class ForwardChainingServiceImpl implements ForwardChainingService {
     private static Boolean consistentInFacts = false;
     private static Boolean isFlag2 = false;
     private static List<Integer> path = new ArrayList<Integer>();
+    private static List<Long> produkcijosIds = new ArrayList<Long>();
+    private static IsvedimoDuomenys duomenys = new IsvedimoDuomenys();
     private static Scanner scanner = new Scanner(System.in);
 
     @Autowired
     private ProdukcijaRepository produkcijaRepository;
 
     @Override
-    public String forwardChainingOutput(String goal1, List<String> facts1) {
+    public IsvedimoDuomenys forwardChainingOutput(String goal1, List<String> facts1) {
+
+        duomenys = new IsvedimoDuomenys();
+        duomenys.setProdukcijosIds(new ArrayList<>());
 
         counter = 0;
         path = new ArrayList<>();
+        produkcijosIds = new ArrayList<>();
         goal = goal1;
         facts = facts1;
         GDB = facts;
-        List<Produkcija> productions = produkcijaRepository.findAll();
+        this.productions = produkcijaRepository.findAll();
 
         // Create a stream to hold the output
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -88,13 +95,15 @@ public class ForwardChainingServiceImpl implements ForwardChainingService {
                 }
             }
         } else {
-            return "Tikslas negautas.";
+            duomenys.setIsvedimoInfo("Tikslas negautas.");
+            return duomenys;
         }
     }
         System.out.flush();
         System.setOut(old);
 
-        return baos.toString();
+        duomenys.setIsvedimoInfo(baos.toString());
+        return duomenys;
 }
 
     private static void printFacts() {
@@ -108,6 +117,7 @@ public class ForwardChainingServiceImpl implements ForwardChainingService {
         if ((!GDB.contains(goal))) {
             System.out.println("\n " + (++counter) + " ITERACIJA");
             for (int i = 0; i < productions.size(); i++) {
+                System.out.println(i);
                 if ((!GDB.contains(goal))) {
                     isFlag1 = false;
                     isFlag2 = false;
@@ -119,6 +129,8 @@ public class ForwardChainingServiceImpl implements ForwardChainingService {
                         printFacts();
                         System.out.println(".");
                         path.add(i + 1);
+                        System.out.println(productions.get(i).getId());
+                        duomenys.getProdukcijosIds().add(productions.get(i).getId());
                         forwardChaining();
                     } else if (isFlag1) {
                         System.out.println("   R" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " praleidžiame, nes pakelta flag1.");

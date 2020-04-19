@@ -1,5 +1,6 @@
 package com.staxrt.tutorial.controller;
 
+import com.staxrt.tutorial.model.IsvedimoDuomenys;
 import com.staxrt.tutorial.model.Production;
 import com.staxrt.tutorial.model.TipasA;
 import com.staxrt.tutorial.model.view.IsvedimasSearch;
@@ -26,9 +27,9 @@ public class ProductionController {
     }
 
     @PostMapping("/tiesioginis-isvedimas")
-    public TipasA getForwardChainingOutput(@RequestBody IsvedimasSearch search) {
-        TipasA tipasA = new TipasA();
-        tipasA.setDuomenys(forwardChainingService.forwardChainingOutput(search.getIsvestis(), search.getIvestys()));
-        return tipasA;
+    public IsvedimoDuomenys getForwardChainingOutput(@RequestBody IsvedimasSearch search) {
+        IsvedimoDuomenys duomenys;
+        duomenys = forwardChainingService.forwardChainingOutput(search.getIsvestis(), search.getIvestys());
+        return duomenys;
     }
 }
