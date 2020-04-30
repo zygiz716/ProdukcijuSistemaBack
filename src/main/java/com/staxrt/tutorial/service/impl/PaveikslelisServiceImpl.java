@@ -1,11 +1,13 @@
 package com.staxrt.tutorial.service.impl;
 
 import com.staxrt.tutorial.model.InfoPaveiksleliui;
+import com.staxrt.tutorial.model.Produkcija;
 import com.staxrt.tutorial.service.PaveikslelisService;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,7 +43,7 @@ public class PaveikslelisServiceImpl implements PaveikslelisService {
         graphics2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
         graphics2d.setFont(font);
         fontmetrics = graphics2d.getFontMetrics();
-        graphics2d.setColor(Color.getColor(info.getSpalva(), Color.CYAN));
+        graphics2d.setColor(this.toColor(info.getSpalva(), Color.BLACK));
         for (String part : parts) {
             graphics2d.drawString(part, 0, y +=fontmetrics.getAscent());
         }
@@ -51,5 +53,27 @@ public class PaveikslelisServiceImpl implements PaveikslelisService {
         ImageIO.write(image, "png", baos);
 
         return baos.toByteArray();
+    }
+
+    private static Color toColor(String string, Color def) {
+        Color out = null;
+        if (string == null)
+            return def;
+        if ("melyna".equals(string))
+            return Color.BLUE;
+        if ("zalia".equals(string))
+            return Color.GREEN;
+        if ("pilka".equals(string))
+            return Color.GRAY;
+        if ("geltona".equals(string))
+            return Color.YELLOW;
+        if ("sviesiai_pilka".equals(string))
+            return Color.LIGHT_GRAY;
+        if ("raudona".equals(string))
+            return Color.RED;
+        out = Color.getColor(string);
+        if (out == null)
+            out = def;
+        return out;
     }
 }

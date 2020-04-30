@@ -2,24 +2,14 @@ package com.staxrt.tutorial.controller;
 
 import com.staxrt.tutorial.model.InfoPaveiksleliui;
 import com.staxrt.tutorial.model.Tekstas;
-import com.staxrt.tutorial.model.TipasA;
-import com.staxrt.tutorial.model.TipasB;
-import com.staxrt.tutorial.model.view.GrandinesInfo;
-import com.staxrt.tutorial.service.ConverterABService;
 import com.staxrt.tutorial.service.PaveikslelisService;
 import com.staxrt.tutorial.service.TekstoRedagavimasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/produkciju-vykdymas")
@@ -54,7 +44,7 @@ public class GrandinesVykdymasController {
     @PostMapping(value = "/paveikslelio-sukurimas", produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getImageWithMediaType(@RequestBody InfoPaveiksleliui info) throws IOException {
 
-        System.out.println(info.getTekstas() + info.getSpalva());
+       System.out.println(info.getTekstas() + info.getSpalva());
         return paveikslelisService.sukurtiPaveiksleli(info);
     }
 }

@@ -29,6 +29,9 @@ public class Produkcija {
     @Column(name = "isvestis")
     private String isvestis;
 
+    @Column(name = "kaina")
+    private Long kaina;
+
     @Transient
     private boolean flag1 = false;
 

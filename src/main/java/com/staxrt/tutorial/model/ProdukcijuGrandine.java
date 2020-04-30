@@ -21,6 +21,13 @@ public class ProdukcijuGrandine {
     @Column(name = "pavadinimas")
     private String pavadinimas;
 
+    @Column(name="ivestys")
+    @ElementCollection(targetClass=String.class)
+    private List<String> ivestys;
+
+    @Column(name = "isvestis")
+    private String isvestis;
+
     @ManyToMany
     @JoinTable(
             name = "produkcija_grandine",

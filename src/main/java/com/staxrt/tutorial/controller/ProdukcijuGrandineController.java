@@ -27,7 +27,8 @@ public class ProdukcijuGrandineController {
 
     @GetMapping("/{id}")
     public ProdukcijuGrandine gautiProdukcija(@PathVariable("id") Long id) {
-        return produkcijuGrandineService.getGrandine(id);
+        ProdukcijuGrandine grandine = produkcijuGrandineService.getGrandine(id);
+        return grandine;
     }
 
     @PostMapping("/kurti-nauja")

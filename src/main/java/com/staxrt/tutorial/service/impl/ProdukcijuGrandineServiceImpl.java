@@ -45,6 +45,8 @@ public class ProdukcijuGrandineServiceImpl implements ProdukcijuGrandineService 
             grandine.setId(view.getId());
         }
         grandine.setPavadinimas(view.getPavadinimas());
+        grandine.setIsvestis(view.getIsvestis());
+        grandine.setIvestys(view.getIvestys());
         grandine.setProdukcijos(view.getProdukcijos());
         return grandine;
     }
