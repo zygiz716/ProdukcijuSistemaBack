@@ -2,7 +2,6 @@ package com.staxrt.tutorial.service.impl;
 
 import com.staxrt.tutorial.model.Produkcija;
 import com.staxrt.tutorial.model.view.ProdukcijaView;
-import com.staxrt.tutorial.repository.ProductionRepository;
 import com.staxrt.tutorial.repository.ProdukcijaRepository;
 import com.staxrt.tutorial.service.ProdukcijaService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,239 +13,211 @@ import java.util.*;
 
 @Service
 public class AtbulinisIsvedimasServiceImpl implements AtbulinisIsvedimasService {
-    private static List<Produkcija> productions = new ArrayList<Produkcija>();
-    private static List<String> facts;
-    private static List<String> newFacts = new ArrayList<String>();
-    private static List<String> savedFacts = new ArrayList<String>();
-    private static Stack goals = new Stack();
-    private static String goal = "";
-    private static String finalGoal = "";
-    private static List<String> GDB = new ArrayList<String>();
-    private static int counter = 0;
+    private static List<Produkcija> produkcijos = new ArrayList<Produkcija>();
+    private static List<String> faktai;
+    private static List<Long> kelias = new ArrayList();
+    private static List<String> naujiFaktai = new ArrayList();
+    private static List<String> tikslai = new ArrayList();
+    private static String tikslas = "";
     private static IsvedimoDuomenys duomenys = new IsvedimoDuomenys();
-    private static int depthCounter = 0;
-    private static boolean canBeApplied = false;
-    private static List<Integer> path = new ArrayList<>();
-    private static List<Integer> savedPath = new ArrayList<>();
-    private static String test1 = "test1.txt";
-    private static List<Long> produkcijosIds = new ArrayList<Long>();
+    private static int gylis = 0;
+    public static int zingsnis = 0;
 
     @Autowired
     private ProdukcijaRepository produkcijaRepository;
 
     public IsvedimoDuomenys AtliktiAtbuliniIsvedima(String goal1, List<String> facts1) {
         duomenys = new IsvedimoDuomenys();
+        naujiFaktai.clear();
+        kelias.clear();
+        tikslai.clear();
         duomenys.setProdukcijosIds(new ArrayList<>());
-        newFacts.clear();
-        counter = 0;
-        path = new ArrayList<>();
-        produkcijosIds = new ArrayList<>();
-        goal = goal1;
-        goal1 = goal1;
-        facts = facts1;
-        GDB = facts;
-        this.productions = produkcijaRepository.findAll();
+        zingsnis = 0;
+        tikslas = goal1;
+        faktai = facts1;
+        this.produkcijos = produkcijaRepository.findAll();
 
-        // Create a stream to hold the output
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-// IMPORTANT: Save the old System.out!
-        PrintStream old = System.out;
-// Tell Java to use your special stream
-        System.setOut(ps);
-
-        System.out.println("1 DALIS. Duomenys");
-        System.out.println();
-        System.out.println("  1) Taisyklės");
-        for(int i = 0; i < productions.size(); i++){
-            System.out.println("     R" + (i + 1) + ": " + productions.get(i).printIvestys() + " -> " + productions.get(i).getIsvestis());
+        duomenys.pridetiEilute("1 DALIS. Duomenys");
+        duomenys.pridetiEilute();
+        duomenys.pridetiEilute("  1) Taisyklės");
+        for(int i = 0; i < produkcijos.size(); i++){
+            duomenys.pridetiEilute("     R" + (i + 1) + ": " + produkcijos.get(i).printIvestys() + " -> " + produkcijos.get(i).getIsvestis());
         }
-        System.out.println();
-        System.out.println("  2) Faktai");
-        System.out.print("     ");
+        duomenys.pridetiEilute();
+        duomenys.pridetiEilute("  2) Faktai");
+        duomenys.pridetiTeksta("     ");
         printFacts();
-        System.out.println("\n");
-        System.out.println("  3) Tikslas");
-        System.out.print("     " + goal + "\n\n");
-        if(facts.contains(goal)){
-            System.out.println("\n3 DALIS. Rezultatai");
-            System.out.println("  Tikslas " + goal + " tarp faktų. Kelias tuščias.");
+        duomenys.pridetiEilute("\n");
+        duomenys.pridetiEilute("  3) Tikslas");
+        duomenys.pridetiTeksta("     " + tikslas + "\n\n");
+        if(faktai.contains(tikslas)){
+            duomenys.pridetiEilute("\n3 DALIS. Rezultatai");
+            duomenys.pridetiEilute("  Tikslas " + tikslas + " tarp faktų. Kelias tuščias.");
         }else{
-            System.out.println("2 DALIS. Vykdymas\n");
+            duomenys.pridetiEilute("2 DALIS. Vykdymas\n");
             boolean find = false;
-            find = backwardChaining(goal);
+            find = backwardChaining(tikslas,0);
             if (find){
-                System.out.println("\n3 DALIS. Rezultatai\n");
-                System.out.println("  1) Tikslas " + goal + " pasiektas.");
-                System.out.print("  2) Kelias: ");
+                duomenys.pridetiEilute();
+                duomenys.pridetiEilute("\n3 DALIS. Rezultatai\n");
+                duomenys.pridetiEilute("  1) Tikslas " + tikslas + " pasiektas.");
+                duomenys.pridetiTeksta("  2) Kelias: ");
                 printPath();
-                System.out.println();
+                duomenys.pridetiEilute();
             }else{
-                System.out.println("\n3 DALIS. Rezultatai\n");
-                System.out.println("  1) Tikslas " + goal + " nepasiektas.");
-                System.out.println("  2) Kelias neegzistuoja.");
+                duomenys.pridetiEilute();
+                duomenys.pridetiEilute("\n3 DALIS. Rezultatai\n");
+                duomenys.pridetiEilute("  1) Tikslas " + tikslas + " nepasiektas.");
+                duomenys.pridetiEilute("  2) Kelias neegzistuoja.");
             }
         }
-        duomenys.setIsvedimoInfo(baos.toString());
+        duomenys.setProdukcijosIds(kelias);
         return duomenys;
     }
 
     public static void printFacts(){
-        for(int i = 0; i < facts.size() - 1; i++){
-            System.out.print(facts.get(i) + ", ");
+        for(int i = 0; i < faktai.size() - 1; i++){
+            duomenys.pridetiTeksta(faktai.get(i) + ", ");
         }
-        System.out.print(facts.get(facts.size() - 1));
-    }
-    public static void printNewFacts(){
-        for(int z = 0; z < newFacts.size(); z++){
-            if (newFacts.size() == 1 || z == newFacts.size() - 1){
-                System.out.print(newFacts.get(z) + ". ");
-            }else{
-                System.out.print(newFacts.get(z) + ", ");
-            }
-        }
-    }
-
-    public static void printDepth(){
-        for(int i = 0; i < depthCounter; i++){
-            System.out.print("-");
-        }
-    }
-
-    public static void printInfo(String text){
-        System.out.printf(String.format("%3s", ++counter) + ") ");
-        printDepth();
-        System.out.print(text);
+        duomenys.pridetiTeksta(faktai.get(faktai.size() - 1));
     }
 
     public static void printPath() {
         List<Produkcija> panaudotosProdukcijos = new ArrayList<>();
-        productions.forEach(produkcija -> {
-            if (produkcijosIds.contains(produkcija.getId())) {
+        produkcijos.forEach(produkcija -> {
+            if (kelias.contains(produkcija.getId())) {
                 panaudotosProdukcijos.add(produkcija);
             }
         });
 
-        for (int i = 0; i < path.size(); i++) {
-            if (i != path.size() - 1) {
-                System.out.print("R" + path.get(i) + ", ");
+        for (int i = 0; i < panaudotosProdukcijos.size(); i++) {
+            if (i != panaudotosProdukcijos.size() - 1) {
+                duomenys.pridetiTeksta( panaudotosProdukcijos.get(i).getPavadinimas() + ", ");
             } else {
-                System.out.print("R" + path.get(i) + ". ");
+                duomenys.pridetiTeksta(panaudotosProdukcijos.get(i).getPavadinimas() + ". ");
             }
         }
     }
 
-    private static boolean isProd = false;
-
-    public static boolean backwardChaining(String goal){
-        goals.push(goal);
-        if (facts.contains(goal)){
-            printInfo("Tikslas " + goal + ". Faktas (duotas), nes faktai ");  printFacts(); System.out.println(". Grįžtame, sėkmė. ");
-            goals.pop();
-            depthCounter--;
-            return true;
-        }else if (newFacts.contains(goal)){
-            printInfo("Tikslas " + goal + ". Faktas (buvo gautas). Faktai "); printFacts(); System.out.print(" ir "); printNewFacts();
-            System.out.println("Grįžtame, sėkmė.");
-            goals.pop();
-            depthCounter--;
-            return true;
-        }else if (Collections.frequency(goals, goal) > 1){
-            printInfo("Tikslas " + goal + ". Ciklas. Grįžtame, FAIL. \n");
-            goals.pop();
-            depthCounter--;
+    public static boolean backwardChaining(String goal, int depth) {
+        if (tikslai.contains(goal)) {
+            ++zingsnis;
+            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            indent(depth);
+            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiEilute(" Ciklas. Grįžtame, FAIL.");
             return false;
-        }
+        } else if (faktai.contains(goal)) {
+            ++zingsnis;
+            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            indent(depth);
+            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiEilute(" Faktas (duotas), nes faktai " + goal + ". Grįžtame, sėkmė.");
+            return true;
+        } else if (naujiFaktai.contains(goal)) {
+            ++zingsnis;
+            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            indent(depth);
+            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiEilute(" Faktas (buvo gautas). Grįžtame, sėkmė.");
+            return true;
+        } else {
+            tikslai.add(goal);
 
-        else {
-            savedFacts.clear();
-            for(int i = 0; i < newFacts.size(); i++){
-                savedFacts.add(newFacts.get(i));
-            }
-            savedPath.clear();
-            for(int i = 0; i < path.size(); i++){
-                savedPath.add(path.get(i));
-            }
-            for (int i = 0; i < productions.size(); i++) {
-                canBeApplied = true;
-                productions.get(i).setFlag1(true);
+            int i;
+            for(i = 0; i < produkcijos.size(); i++) {
+/*                duomenys.pridetiEilute(produkcijos.get(i));*/
+                if ((produkcijos.get(i)).getIsvestis().equals(goal)) {
+                    ++zingsnis;
+                    duomenys.pridetiTeksta(Integer.toString(zingsnis));
+                    indent(depth);
+                    duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+                    duomenys.pridetiTeksta(" Randame ");
+                    duomenys.pridetiTeksta("R" + (i + 1) + ": " + (produkcijos.get(i)).getIvestys() + " -> " + (produkcijos.get(i)).getIsvestis() + ". Nauji tikslai ");
 
-
-
-                if (productions.get(i).getIsvestis().equals(goal)) {
-                    isProd = true;
-                    printInfo("Tikslas " + goal + ". Randame R" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + goal + ". ");
-                    System.out.print("Nauji tikslai ");
-                    for(int z = 0; z < productions.get(i).getIvestys().size(); z++){
-                        if (productions.get(i).getIvestys().size() == 1 || z == productions.get(i).getIvestys().size() - 1){
-                            System.out.print(productions.get(i).getIvestys().get(z) + ".");
-                        }else{
-                            System.out.print(productions.get(i).getIvestys().get(z) + ",");
-                        }
+                    for(int j = 0; j < (produkcijos.get(i)).getIvestys().size() - 1; ++j) {
+                        duomenys.pridetiTeksta((produkcijos.get(i)).getIvestys().get(j) + ", ");
                     }
-                    System.out.println();
-                    for (int j = 0; j < productions.get(i).getIvestys().size(); j++) {
-                        depthCounter++;
-                        if (!backwardChaining(productions.get(i).getIvestys().get(j))) {
-                            canBeApplied = false;
-                            path.clear();
-                            for(int z = 0; z < savedPath.size(); z++){
-                                path.add(savedPath.get(z));
-                            }
-                            newFacts.clear();
-                            for(int z = 0; z < savedFacts.size(); z++){
-                                newFacts.add(savedFacts.get(z));
-                            }
-                            productions.get(i).setFlag1(false);
+
+                    duomenys.pridetiEilute((produkcijos.get(i)).getIvestys().get((produkcijos.get(i)).getIvestys().size() - 1) + ".");
+                    boolean galimaTaikyti = true;
+                    ArrayList<String> ankstesniFaktai = new ArrayList();
+                    ArrayList<Long> ankstesnisKelias = new ArrayList();
+                    ankstesniFaktai.addAll(naujiFaktai);
+                    ankstesnisKelias.addAll(kelias);
+                    //Iterator var8 = (productions.get(i)).getIvestys().iterator();
+
+                    for(int j = 0; j < (produkcijos.get(i)).getIvestys().size(); ++j){
+                        if (!backwardChaining(produkcijos.get(i).getIvestys().get(j), depth + 1)) {
+                            galimaTaikyti = false;
+                            naujiFaktai = ankstesniFaktai;
+                            kelias = ankstesnisKelias;
+                            kelias.forEach(System.out::println);
                             break;
                         }
                     }
-                    if (canBeApplied){
-                        newFacts.add(goal);
-                        printInfo("Tikslas " + goal + ". Faktas (dabar gautas). Faktai "); printFacts(); System.out.print(" ir "); printNewFacts();
-                        if (goals.size() == 1 && goals.lastElement().equals(finalGoal)){
-                            System.out.println("Sėkmė.");
-                        }else {
-                            System.out.println("Grįžtame, sėkmė.");
+
+                    if (galimaTaikyti) {
+                        naujiFaktai.add(produkcijos.get(i).getIsvestis());
+                        kelias.add(produkcijos.get(i).getId());
+                        zingsnis++;
+                        duomenys.pridetiTeksta(Integer.toString(zingsnis));
+                        indent(depth);
+                        duomenys.pridetiTeksta(".Tikslas " + goal + ". Faktas (dabar gautas). Faktai ");
+
+                        int j;
+                        for(j = 0; j < faktai.size(); j++) {
+                            duomenys.pridetiTeksta(faktai.get(j) + " ir ");
                         }
-                        goals.pop();
-                        path.add(i + 1);
-                        duomenys.getProdukcijosIds().add(productions.get(i).getId());
-                        depthCounter--;
+
+                        for(j = 0; j < naujiFaktai.size(); j++) {
+                            if(j == naujiFaktai.size()-1){
+                                duomenys.pridetiTeksta(naujiFaktai.get(j) + ". Grįžtame, sėkmė.");
+                            } else{
+                                duomenys.pridetiTeksta(naujiFaktai.get(j) + ", ");
+                            }
+                        }
+                        j = 0;
+
+                        for(int z = 0; z < tikslai.size(); ++z) {
+                            if (tikslai.get(z).equals(goal)) {
+                                j = z;
+                                break;
+                            }
+                        }
+
+                        tikslai.remove(j);
                         return true;
                     }
                 }
-
-
-
             }
-            if (isProd) {
-                productions.forEach(produkcija -> {
-                    if (produkcija.getIvestys().contains(goal)) {
-                        produkcija.getIvestys().forEach(ivestis -> {
-                            savedFacts.remove(ivestis);
-                            newFacts.remove(ivestis);
-                            facts.remove(ivestis);
-                            System.out.println(ivestis);
-                            int i;
-                            for(i=0; i<productions.size(); i++){
-                                if(productions.get(i).getIsvestis().equals(ivestis)){
-                                    path.remove(i);
-                                    savedPath.remove(i);
-                                    duomenys.getProdukcijosIds().remove(productions.get(i).getId());
-                                }
-                            }
-                        });
-                    }
-                });
-                printInfo("Tikslas " + goal + ". Nėra taisyklių jo išvedimui. Grįžtame, FAIL. \n");
-                isProd = false;
-            }else {
-                printInfo("Tikslas " + goal + ". Nėra daugiau taisyklių jo išvedimui. Grįžtame, FAIL. \n");
+
+            zingsnis++;
+            duomenys.pridetiEilute();
+            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            indent(depth);
+            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiEilute(" Nėra daugiau taisyklių jo išvedimui. Grįžtame, FAIL.");
+            i = 0;
+
+            for(int z = 0; z < tikslai.size(); ++z) {
+                if (tikslai.get(z) == goal) {
+                    i = z;
+                    break;
+                }
             }
-            goals.pop();
-            depthCounter--;
+
+            tikslai.remove(i);
+            return false;
         }
-        return false;
     }
+
+    public static void indent(int depth) {
+        for(int i = 0; i < depth; ++i) {
+            duomenys.pridetiTeksta(".");
+        }
+
+    }
+
+
 }

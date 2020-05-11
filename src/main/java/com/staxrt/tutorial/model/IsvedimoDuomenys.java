@@ -9,6 +9,18 @@ import java.util.List;
 @Setter
 @Getter
 public class IsvedimoDuomenys {
-    String isvedimoInfo;
-    List<Long> produkcijosIds;
+    private String isvedimoInfo = "";
+    private List<Long> produkcijosIds;
+
+    public void pridetiEilute(String line) {
+        this.isvedimoInfo += line + "\n";
+    }
+
+    public void pridetiEilute() {
+        this.isvedimoInfo += "\n";
+    }
+
+    public void pridetiTeksta(String tekstas) {
+        this.isvedimoInfo += tekstas;
+    }
 }
