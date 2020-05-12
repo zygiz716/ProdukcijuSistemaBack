@@ -41,6 +41,7 @@ public class ProdukcijaServiceImpl implements ProdukcijaService {
             produkcija.setId(view.getId());
         }
         produkcija.setPavadinimas(view.getPavadinimas());
+        produkcija.setKaina(view.getKaina());
         produkcija.setIsvestis(view.getIsvestis());
         produkcija.setIvestys(view.getIvestys());
         return produkcija;

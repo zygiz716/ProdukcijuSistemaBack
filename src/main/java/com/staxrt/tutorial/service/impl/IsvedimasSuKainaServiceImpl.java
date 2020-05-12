@@ -3,13 +3,10 @@ package com.staxrt.tutorial.service.impl;
 import com.staxrt.tutorial.model.IsvedimoDuomenys;
 import com.staxrt.tutorial.model.Produkcija;
 import com.staxrt.tutorial.repository.ProdukcijaRepository;
-import com.staxrt.tutorial.service.AtbulinisIsvedimasService;
 import com.staxrt.tutorial.service.IsvedimasSuKainaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.*;
 
 @Service
@@ -25,7 +22,7 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
     private static int gylis = 0;
     private static long kaina = 0;
     public static int zingsnis = 0;
-    private static long temp_kaina = 0;
+    //private static long temp_kaina = 0;
     //private static long min_kaina = -1;
 
     @Autowired
@@ -37,7 +34,6 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
         naujiFaktai.clear();
         kelias.clear();
         tikslai.clear();
-        //galutinisKelias.clear();
         duomenys.setProdukcijosIds(new ArrayList<>());
         zingsnis = 0;
         tikslas = goal1;
@@ -64,7 +60,7 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
         }else{
             duomenys.pridetiEilute("2 DALIS. Vykdymas\n");
             boolean find = false;
-            find = backwardChaining(tikslas,0);
+            find = isvedimasPagalKaina(tikslas,0);
             if (find){
                 duomenys.pridetiEilute();
                 duomenys.pridetiEilute("\n3 DALIS. Rezultatai\n");
@@ -107,34 +103,31 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
         }
     }
 
-    public static boolean backwardChaining(String goal, int depth) {
+    public static boolean isvedimasPagalKaina(String goal, int rekursijosGylis) {
         if (tikslai.contains(goal)) {
             ++zingsnis;
             duomenys.pridetiTeksta(Integer.toString(zingsnis));
-            duomenys.pridetiTeksta(Long.toString(kaina));
-            indent(depth);
+            pazymetiGyli(rekursijosGylis);
             duomenys.pridetiTeksta(".Tikslas " + goal + ".");
             duomenys.pridetiEilute(" Ciklas. Grįžtame, FAIL.");
             return false;
         } else if (faktai.contains(goal)) {
             ++zingsnis;
             duomenys.pridetiTeksta(Integer.toString(zingsnis));
-            duomenys.pridetiTeksta(Long.toString(kaina));
-            indent(depth);
+            pazymetiGyli(rekursijosGylis);
             duomenys.pridetiTeksta(".Tikslas " + goal + ".");
             duomenys.pridetiEilute(" Faktas (duotas), nes faktai " + goal + ". Grįžtame, sėkmė.");
             return true;
         } else if (naujiFaktai.contains(goal)) {
             ++zingsnis;
             duomenys.pridetiTeksta(Integer.toString(zingsnis));
-            duomenys.pridetiTeksta(Long.toString(kaina));
-            indent(depth);
+            pazymetiGyli(rekursijosGylis);
             duomenys.pridetiTeksta(".Tikslas " + goal + ".");
             duomenys.pridetiEilute(" Faktas (buvo gautas). Grįžtame, sėkmė.");
             return true;
         } else {
             long min_kaina = -1;
-            ArrayList<Long> galutinisKelias = new ArrayList();
+            ArrayList<Long> geriausiasKelias = new ArrayList();
             tikslai.add(goal);
 
             int i;
@@ -143,97 +136,56 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
                 if ((produkcijos.get(i)).getIsvestis().equals(goal)) {
                     ++zingsnis;
                     duomenys.pridetiTeksta(Integer.toString(zingsnis));
-                    duomenys.pridetiTeksta(Long.toString(kaina));
-                    indent(depth);
+                    pazymetiGyli(rekursijosGylis);
                     duomenys.pridetiTeksta(".Tikslas " + goal + ".");
                     duomenys.pridetiTeksta(" Randame ");
-                    List<String> left_rules = (produkcijos.get(i)).getIvestys();
-                    duomenys.pridetiTeksta("R" + (i + 1) + ": " + left_rules + " -> " + (produkcijos.get(i)).getIsvestis() + ". Nauji tikslai ");
+                    duomenys.pridetiTeksta("R" + (i + 1) + ": " + (produkcijos.get(i)).getIvestys() + " -> " + (produkcijos.get(i)).getIsvestis() + ". Nauji tikslai ");
 
                     for(int j = 0; j < (produkcijos.get(i)).getIvestys().size() - 1; ++j) {
                         duomenys.pridetiTeksta((produkcijos.get(i)).getIvestys().get(j) + ", ");
                     }
 
                     duomenys.pridetiEilute((produkcijos.get(i)).getIvestys().get((produkcijos.get(i)).getIvestys().size() - 1) + ".");
-                    boolean usable = true;
-                    ArrayList<String> temp_derived_facts = new ArrayList();
-                    ArrayList<Long> temp_productions = new ArrayList();
-                    long temp_kaina = kaina;
+                    boolean produkcijaIsvedama = true;
+                    ArrayList<String> ankstesniFaktai = new ArrayList();
+                    ArrayList<Long> ankstesnisKelias = new ArrayList();
+                    ArrayList<Long> laikinasKelias = new ArrayList();
+                    boolean neraKelio = geriausiasKelias.isEmpty();
+                    long ankstesneKaina = kaina;
 
-                    temp_derived_facts.addAll(naujiFaktai);
-                    temp_productions.addAll(kelias);
-                    if(goal.equals(tikslas)){
-                        //min_kaina = kaina;
-                    }
-                    //Iterator var8 = (productions.get(i)).getIvestys().iterator();
+                    ankstesniFaktai.addAll(naujiFaktai);
+                    ankstesnisKelias.addAll(kelias);
 
                     for(int j = 0; j < (produkcijos.get(i)).getIvestys().size(); ++j){
-                        if (!backwardChaining(produkcijos.get(i).getIvestys().get(j), depth + 1) && (min_kaina <= (kaina + produkcijos.get(i).getKaina()) && min_kaina != -1)) {
-                            usable = false;
-                            naujiFaktai = temp_derived_facts;
-                            kelias = temp_productions;
-                            kaina = temp_kaina;
+                        if ( !isvedimasPagalKaina(produkcijos.get(i).getIvestys().get(j), rekursijosGylis + 1) ||( (min_kaina <= (kaina + produkcijos.get(i).getKaina()) && min_kaina != -1))) {
+                            produkcijaIsvedama = false;
+                            naujiFaktai = ankstesniFaktai;
+                            kelias = ankstesnisKelias;
+                            kaina = ankstesneKaina;
                             kelias.forEach(System.out::println);
+                            if(neraKelio){
+                                laikinasKelias.clear();
+                            }
                             break;
                         }
                         else if(!faktai.contains(produkcijos.get(i).getIvestys().get(j))){
-                            galutinisKelias.clear();
-                            galutinisKelias.addAll(kelias);
-                            naujiFaktai = temp_derived_facts;
-                            kelias = temp_productions;
-                        } else if(produkcijos.get(i).getIvestys().size()<2){
-                            duomenys.pridetiEilute(kaina + "  labas" + produkcijos.get(i).getIvestys().get(j));
-                            //kaina = temp_kaina;
+                            Set<Long> set = new HashSet<>(kelias);
+                            laikinasKelias.addAll(set);
+                            naujiFaktai = ankstesniFaktai;
+                            kelias = ankstesnisKelias;
                         }
                     }
 
-                    if (((usable && (min_kaina > (kaina + produkcijos.get(i).getKaina()) || min_kaina == -1)))) {
-                        if ((min_kaina > (kaina + produkcijos.get(i).getKaina())) || min_kaina == -1) {
-                            if(min_kaina != -1){
-                                galutinisKelias.clear();
-                                galutinisKelias.addAll(kelias);
-                            }
-                            kaina = kaina + produkcijos.get(i).getKaina();
-                            min_kaina = kaina;
-                            galutinisKelias.add(produkcijos.get(i).getId());
-                            duomenys.pridetiEilute("Rasta nauja geriausia tikslo " + produkcijos.get(i).getIsvestis() + "Kaina " + min_kaina);
-                            kaina = temp_kaina;
-                        } /*else {
-
+                    if (((produkcijaIsvedama && (min_kaina > (kaina + produkcijos.get(i).getKaina()) || min_kaina == -1)))) {
+                        geriausiasKelias.clear();
+                        geriausiasKelias.addAll(laikinasKelias);
                         kaina = kaina + produkcijos.get(i).getKaina();
-                        naujiFaktai.add(produkcijos.get(i).getIsvestis());
-                        kelias.add(produkcijos.get(i).getId());
-                        zingsnis++;
-                        duomenys.pridetiTeksta(Integer.toString(zingsnis));
-                        duomenys.pridetiTeksta(Long.toString(kaina));
-                        indent(depth);
-                        duomenys.pridetiTeksta(".Tikslas " + goal + ". Faktas (dabar gautas). Faktai ");
-                        String gdb = "";
-
-                        int j;
-                        for (j = 0; j < faktai.size(); j++) {
-                            duomenys.pridetiTeksta(faktai.get(j) + " ir ");
-                        }
-
-                        for (j = 0; j < naujiFaktai.size(); j++) {
-                            if (j == naujiFaktai.size() - 1) {
-                                duomenys.pridetiTeksta(naujiFaktai.get(j) + ". Grįžtame, sėkmė.");
-                            } else {
-                                duomenys.pridetiTeksta(naujiFaktai.get(j) + ", ");
-                            }
-                        }
-                        j = 0;
-
-                        for (int z = 0; z < tikslai.size(); ++z) {
-                            if (tikslai.get(z).equals(goal)) {
-                                j = z;
-                                break;
-                            }
-                        }
-
-                        tikslai.remove(j);
-                        return true;
-                    }*/
+                        min_kaina = kaina;
+                        geriausiasKelias.add(produkcijos.get(i).getId());
+                        duomenys.pridetiEilute("\nRasta nauja geriausia tikslo " + produkcijos.get(i).getIsvestis() + " Kaina " + min_kaina);
+                        kaina = ankstesneKaina;
+                        kelias = ankstesnisKelias;
+                        naujiFaktai = ankstesniFaktai;
                     }
                 }
             }
@@ -241,10 +193,9 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
             ++zingsnis;
             duomenys.pridetiEilute();
             duomenys.pridetiTeksta(Integer.toString(zingsnis));
-            duomenys.pridetiTeksta(Long.toString(kaina));
-            indent(depth);
+            pazymetiGyli(rekursijosGylis);
             duomenys.pridetiTeksta(".Tikslas " + goal + ".");
-            duomenys.pridetiEilute(" Nėra daugiau taisyklių jo išvedimui. Grįžtame, FAIL.");
+            duomenys.pridetiEilute(" Nėra daugiau taisyklių jo išvedimui. Grįžtame.");
             i = 0;
 
             for(int z = 0; z < tikslai.size(); ++z) {
@@ -257,7 +208,7 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
             tikslai.remove(i);
             if(min_kaina >= 0){
                 kelias.clear();
-                kelias.addAll(galutinisKelias);
+                kelias.addAll(geriausiasKelias);
                 kaina = min_kaina;
                 return true;
             }
@@ -265,8 +216,8 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
         }
     }
 
-    public static void indent(int depth) {
-        for(int i = 0; i < depth; ++i) {
+    public static void pazymetiGyli(int gylis) {
+        for(int i = 0; i < gylis; ++i) {
             duomenys.pridetiTeksta(".");
         }
 

@@ -12,6 +12,7 @@ import java.util.List;
 public class ProdukcijaView {
     private Long id;
     private String pavadinimas;
+    private Long kaina;
     private String ivestis;
     private String isvestis;
     private List<String> ivestys;
