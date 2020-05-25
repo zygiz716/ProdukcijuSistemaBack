@@ -41,7 +41,7 @@ public class AtbulinisIsvedimasServiceImpl implements AtbulinisIsvedimasService 
         duomenys.pridetiEilute();
         duomenys.pridetiEilute("  1) Taisyklės");
         for(int i = 0; i < produkcijos.size(); i++){
-            duomenys.pridetiEilute("     R" + (i + 1) + ": " + produkcijos.get(i).printIvestys() + " -> " + produkcijos.get(i).getIsvestis());
+            duomenys.pridetiEilute("     P" + (i + 1) + ": " + produkcijos.get(i).printIvestys() + " -> " + produkcijos.get(i).getIsvestis());
         }
         duomenys.pridetiEilute();
         duomenys.pridetiEilute("  2) Faktai");
@@ -133,7 +133,7 @@ public class AtbulinisIsvedimasServiceImpl implements AtbulinisIsvedimasService 
                     indent(depth);
                     duomenys.pridetiTeksta(".Tikslas " + goal + ".");
                     duomenys.pridetiTeksta(" Randame ");
-                    duomenys.pridetiTeksta("R" + (i + 1) + ": " + (produkcijos.get(i)).getIvestys() + " -> " + (produkcijos.get(i)).getIsvestis() + ". Nauji tikslai ");
+                    duomenys.pridetiTeksta("P" + (i + 1) + ": " + (produkcijos.get(i)).getIvestys() + " -> " + (produkcijos.get(i)).getIsvestis() + ". Nauji tikslai ");
 
                     for(int j = 0; j < (produkcijos.get(i)).getIvestys().size() - 1; ++j) {
                         duomenys.pridetiTeksta((produkcijos.get(i)).getIvestys().get(j) + ", ");

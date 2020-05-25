@@ -45,7 +45,7 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
         duomenys.pridetiEilute();
         duomenys.pridetiEilute("  1) Taisyklės");
         for(int i = 0; i < produkcijos.size(); i++){
-            duomenys.pridetiEilute("     R" + (i + 1) + ": " + produkcijos.get(i).printIvestys() + " -> " + produkcijos.get(i).getIsvestis());
+            duomenys.pridetiEilute("     P" + (i + 1) + ": " + produkcijos.get(i).printIvestys() + " -> " + produkcijos.get(i).getIsvestis() + "   Kaina: " + produkcijos.get(i).getKaina());
         }
         duomenys.pridetiEilute();
         duomenys.pridetiEilute("  2) Faktai");
@@ -106,23 +106,23 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
     public static boolean isvedimasPagalKaina(String goal, int rekursijosGylis) {
         if (tikslai.contains(goal)) {
             ++zingsnis;
-            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            duomenys.pridetiTeksta(zingsnis +". ");
             pazymetiGyli(rekursijosGylis);
-            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiTeksta(" Tikslas " + goal + ".");
             duomenys.pridetiEilute(" Ciklas. Grįžtame, FAIL.");
             return false;
         } else if (faktai.contains(goal)) {
             ++zingsnis;
-            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            duomenys.pridetiTeksta(zingsnis +". ");
             pazymetiGyli(rekursijosGylis);
-            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiTeksta(" Tikslas " + goal + ".");
             duomenys.pridetiEilute(" Faktas (duotas), nes faktai " + goal + ". Grįžtame, sėkmė.");
             return true;
         } else if (naujiFaktai.contains(goal)) {
             ++zingsnis;
-            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            duomenys.pridetiTeksta(zingsnis +". ");
             pazymetiGyli(rekursijosGylis);
-            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiTeksta(" Tikslas " + goal + ".");
             duomenys.pridetiEilute(" Faktas (buvo gautas). Grįžtame, sėkmė.");
             return true;
         } else {
@@ -135,11 +135,11 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
                 /*                duomenys.pridetiEilute(produkcijos.get(i));*/
                 if ((produkcijos.get(i)).getIsvestis().equals(goal)) {
                     ++zingsnis;
-                    duomenys.pridetiTeksta(Integer.toString(zingsnis));
+                    duomenys.pridetiTeksta(zingsnis +". ");
                     pazymetiGyli(rekursijosGylis);
-                    duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+                    duomenys.pridetiTeksta(" Tikslas " + goal + ".");
                     duomenys.pridetiTeksta(" Randame ");
-                    duomenys.pridetiTeksta("R" + (i + 1) + ": " + (produkcijos.get(i)).getIvestys() + " -> " + (produkcijos.get(i)).getIsvestis() + ". Nauji tikslai ");
+                    duomenys.pridetiTeksta("P" + (i + 1) + ": " + (produkcijos.get(i)).getIvestys() + " -> " + (produkcijos.get(i)).getIsvestis() + ". Nauji tikslai ");
 
                     for(int j = 0; j < (produkcijos.get(i)).getIvestys().size() - 1; ++j) {
                         duomenys.pridetiTeksta((produkcijos.get(i)).getIvestys().get(j) + ", ");
@@ -192,9 +192,9 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
 
             ++zingsnis;
             duomenys.pridetiEilute();
-            duomenys.pridetiTeksta(Integer.toString(zingsnis));
+            duomenys.pridetiTeksta(zingsnis + ". ");
             pazymetiGyli(rekursijosGylis);
-            duomenys.pridetiTeksta(".Tikslas " + goal + ".");
+            duomenys.pridetiTeksta(" Tikslas " + goal + ".");
             duomenys.pridetiEilute(" Nėra daugiau taisyklių jo išvedimui. Grįžtame.");
             i = 0;
 
@@ -218,7 +218,7 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
 
     public static void pazymetiGyli(int gylis) {
         for(int i = 0; i < gylis; ++i) {
-            duomenys.pridetiTeksta(".");
+            duomenys.pridetiTeksta("-");
         }
 
     }
@@ -304,7 +304,7 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
         System.out.println();
         System.out.println("  1) Taisyklės");
         for (int i = 0; i < productions.size(); i++) {
-            System.out.println("     R" + (i + 1) + ": " + productions.get(i).printIvestys() + " -> " + productions.get(i).getIsvestis());
+            System.out.println("     P" + (i + 1) + ": " + productions.get(i).printIvestys() + " -> " + productions.get(i).getIsvestis());
         }
         System.out.println();
         System.out.println("  2) Faktai");
@@ -327,9 +327,9 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
                 System.out.print("    2) Kelias: ");
                 for (int i = 0; i < path.size(); i++) {
                     if (i != path.size() - 1) {
-                        System.out.print("R" + path.get(i) + ", ");
+                        System.out.print("P" + path.get(i) + ", ");
                     } else {
-                        System.out.print("R" + path.get(i) + ".");
+                        System.out.print("P" + path.get(i) + ".");
                     }
                 }
                 duomenys.setProdukcijosIds(gautasGaminys.getProdukcijosIds());
@@ -384,7 +384,7 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
                         } else {
                             GDB.add(naujasGaminys);
                         }
-                        System.out.print("   R" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " taikome. Pakeliame flag1. Faktai ");
+                        System.out.print("   P" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " taikome. Pakeliame flag1. Faktai ");
                         printFacts();
                         System.out.println(".");
                         path.add(i + 1);
@@ -392,13 +392,13 @@ public class IsvedimasSuKainaServiceImpl implements IsvedimasSuKainaService {
                         duomenys.getProdukcijosIds().add(productions.get(i).getId());
                         forwardChaining();
                     } else if (isFlag1) {
-                        System.out.println("   R" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " praleidžiame, nes pakelta flag1.");
+                        System.out.println("   P" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " praleidžiame, nes pakelta flag1.");
                     } else if (consistentInFacts) {
-                        System.out.println("   R" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " netaikome, nes konsekventas faktuose. Pakeliame flag2.");
+                        System.out.println("   P" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " netaikome, nes konsekventas faktuose. Pakeliame flag2.");
                     } else if (isFlag2) {
-                        System.out.println("   R" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " praleidžiame, nes pakelta flag2.");
+                        System.out.println("   P" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " praleidžiame, nes pakelta flag2.");
                     } else {
-                        System.out.println("   R" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " netaikome, nes trūksta " + missingAntecedent + ".");
+                        System.out.println("   P" + (i + 1) + ":" + productions.get(i).printIvestys() + "->" + productions.get(i).getIsvestis() + " netaikome, nes trūksta " + missingAntecedent + ".");
                     }
             }
     }

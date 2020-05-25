@@ -43,11 +43,7 @@ public class PaveikslelisServiceImpl implements PaveikslelisService {
         graphics2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
         graphics2d.setFont(font);
         fontmetrics = graphics2d.getFontMetrics();
-        if (info.getSpalva().isEmpty()) {
-            graphics2d.setColor(Color.decode(info.getSpalva()));
-        } else {
-            graphics2d.setColor(Color.BLACK);
-        }
+        graphics2d.setColor(Color.decode(info.getSpalva()));
         for (String part : parts) {
             graphics2d.drawString(part, 0, y += fontmetrics.getAscent());
         }

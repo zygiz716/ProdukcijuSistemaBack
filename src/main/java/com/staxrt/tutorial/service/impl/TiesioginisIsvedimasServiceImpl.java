@@ -47,7 +47,7 @@ public class TiesioginisIsvedimasServiceImpl implements TiesioginisIsvedimasServ
         duomenys.pridetiEilute();
         duomenys.pridetiEilute("  1) Taisyklės");
         for (int i = 0; i < produkcijos.size(); i++) {
-            duomenys.pridetiEilute("     R" + (i + 1) + ": " + produkcijos.get(i).printIvestys() + " -> " + produkcijos.get(i).getIsvestis());
+            duomenys.pridetiEilute("     P" + (i + 1) + ": " + produkcijos.get(i).printIvestys() + " -> " + produkcijos.get(i).getIsvestis());
         }
         duomenys.pridetiEilute();
         duomenys.pridetiEilute("  2) Faktai");
@@ -69,9 +69,9 @@ public class TiesioginisIsvedimasServiceImpl implements TiesioginisIsvedimasServ
                 duomenys.pridetiTeksta("    2) Kelias: ");
                 for (int i = 0; i < path.size(); i++) {
                     if (i != path.size() - 1) {
-                        duomenys.pridetiTeksta("R" + path.get(i) + ", ");
+                        duomenys.pridetiTeksta("P" + path.get(i) + ", ");
                     } else {
-                        duomenys.pridetiTeksta("R" + path.get(i) + ".");
+                        duomenys.pridetiTeksta("P" + path.get(i) + ".");
                     }
                 }
             } else {
@@ -97,12 +97,12 @@ public class TiesioginisIsvedimasServiceImpl implements TiesioginisIsvedimasServ
                     produkcijaIsvedama = true;
                     int counter = 0;
                     if (produkcijos.get(i).isFlag1()) {
-                        duomenys.pridetiEilute("   R" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " praleidžiame, nes pakelta flag1.");
+                        duomenys.pridetiEilute("   P" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " praleidžiame, nes pakelta flag1.");
                         produkcijaIsvedama = false;
                     }
 
                     if (produkcijos.get(i).isFlag2()) {
-                        duomenys.pridetiEilute("   R" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " praleidžiame, nes pakelta flag2.");
+                        duomenys.pridetiEilute("   P" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " praleidžiame, nes pakelta flag2.");
                         produkcijaIsvedama = false;
                     }
 
@@ -112,13 +112,13 @@ public class TiesioginisIsvedimasServiceImpl implements TiesioginisIsvedimasServ
                         } else {
                             //duomenys.pridetiEilute("TRUKSTA " + productions.get(i).getAntecedents().get(j));
                             trukstamaIvestis = produkcijos.get(i).getIvestys().get(j);
-                            duomenys.pridetiEilute("   R" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " netaikome, nes trūksta " + trukstamaIvestis + ".");
+                            duomenys.pridetiEilute("   P" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " netaikome, nes trūksta " + trukstamaIvestis + ".");
                             produkcijaIsvedama = false;
                         }
                     }
 
                     if (pradiniaiFaktai.contains(String.valueOf(produkcijos.get(i).getIsvestis()))) {
-                        duomenys.pridetiEilute("   R" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " netaikome, nes konsekventas faktuose. Pakeliame flag2.");
+                        duomenys.pridetiEilute("   P" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " netaikome, nes konsekventas faktuose. Pakeliame flag2.");
                         produkcijos.get(i).setFlag2(true);
                         produkcijaIsvedama = false;
                     }
@@ -126,7 +126,7 @@ public class TiesioginisIsvedimasServiceImpl implements TiesioginisIsvedimasServ
                     if (produkcijaIsvedama && counter == produkcijos.get(i).getIvestys().size()) {
                         produkcijos.get(i).setFlag1(true);  // pakeliame - true
                         turimiFaktai.add(String.valueOf(produkcijos.get(i).getIsvestis()));
-                        duomenys.pridetiTeksta("   R" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " taikome. Pakeliame flag1. Faktai ");
+                        duomenys.pridetiTeksta("   P" + (i + 1) + ":" + produkcijos.get(i).printIvestys() + "->" + produkcijos.get(i).getIsvestis() + " taikome. Pakeliame flag1. Faktai ");
                         printFacts();
                         duomenys.pridetiEilute(".");
                         path.add(i + 1);
